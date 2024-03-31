@@ -4,6 +4,7 @@ import { Magician } from './characters/Magician';
 import { Daemon } from './characters/Daemon';
 import { Undead } from './characters/Undead';
 import { Vampire } from './characters/Vampire';
+import Team from './Team';
 
 /**
  * Формирует экземпляр персонажа из массива allowedTypes со
@@ -16,22 +17,24 @@ import { Vampire } from './characters/Vampire';
  *
  */
 export function* characterGenerator(allowedTypes, maxLevel) {
-  const characterType = {
-    Swordsman: Swordsman,
-    Bowman: Bowman,
-    Magician: Magician,
-    Daemon: Daemon,
-    Undead: Undead,
-    Vampire: Vampire,
-  };
-  const selectedType = allowedTypes[Math.floor(Math.random() * allowedTypes.length)];
-  const level = Math.floor(Math.random() * maxLevel) + 1;
+  while (true) {
+    const characterType = {
+      Swordsman: Swordsman,
+      Bowman: Bowman,
+      Magician: Magician,
+      Daemon: Daemon,
+      Undead: Undead,
+      Vampire: Vampire,
+    };
+    const selectedType = allowedTypes[Math.floor(Math.random() * allowedTypes.length)];
+    const level = Math.floor(Math.random() * maxLevel) + 1;
 
-  if (!characterType[selectedType]) {
-    throw new Error('Invalid type');
+    if (!characterType[selectedType]) {
+      throw new Error('Invalid type');
+    }
+
+    yield new characterType[selectedType](level);
   }
-
-  yield new characterType[selectedType](level);
 }
 
 /**
@@ -39,6 +42,6 @@ export function* characterGenerator(allowedTypes, maxLevel) {
  * @param allowedTypes массив классов
  * @param maxLevel максимальный возможный уровень персонажа
  * @param characterCount количество персонажей, которое нужно сформировать
- * @returns экземпляр Team, хранящий экземпляры персонажей. Количество персонажей в команде - characterCount
+ * @returns Object  хранящий экземпляры персонажей. Количество персонажей в команде - characterCount
  * */
 export function generateTeam(allowedTypes, maxLevel, characterCount) {}
