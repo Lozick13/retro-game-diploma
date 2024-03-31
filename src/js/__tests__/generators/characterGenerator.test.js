@@ -9,3 +9,18 @@ test('characterGenerator check type', () => {
 
   expect(allowedTypes.includes(character.type)).toBe(true);
 });
+
+test('chatacterGenerator Error', () => {
+  const allowedTypes = ['fakeSwordsman', 'fakeBowman'];
+  const maxLevel = 4;
+  let errorMessage;
+
+  try {
+    const generator = characterGenerator(allowedTypes, maxLevel);
+    generator.next().value;
+  } catch (e) {
+    errorMessage = e.message;
+  }
+
+  expect(errorMessage).toBe('Invalid type');
+});

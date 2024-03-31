@@ -1,4 +1,9 @@
-import Character from './Character';
+import { Swordsman } from './characters/Swordsman';
+import { Bowman } from './characters/Bowman';
+import { Magician } from './characters/Magician';
+import { Daemon } from './characters/Daemon';
+import { Undead } from './characters/Undead';
+import { Vampire } from './characters/Vampire';
 
 /**
  * Формирует экземпляр персонажа из массива allowedTypes со
@@ -11,11 +16,22 @@ import Character from './Character';
  *
  */
 export function* characterGenerator(allowedTypes, maxLevel) {
+  const characterType = {
+    Swordsman: Swordsman,
+    Bowman: Bowman,
+    Magician: Magician,
+    Daemon: Daemon,
+    Undead: Undead,
+    Vampire: Vampire,
+  };
   const selectedType = allowedTypes[Math.floor(Math.random() * allowedTypes.length)];
   const level = Math.floor(Math.random() * maxLevel) + 1;
-  const character = new Character(level, selectedType);
 
-  yield character;
+  if (!characterType[selectedType]) {
+    throw new Error('Invalid type');
+  }
+
+  yield new characterType[selectedType](level);
 }
 
 /**
@@ -25,6 +41,4 @@ export function* characterGenerator(allowedTypes, maxLevel) {
  * @param characterCount количество персонажей, которое нужно сформировать
  * @returns экземпляр Team, хранящий экземпляры персонажей. Количество персонажей в команде - characterCount
  * */
-export function generateTeam(allowedTypes, maxLevel, characterCount) {
-  // TODO: write logic here
-}
+export function generateTeam(allowedTypes, maxLevel, characterCount) {}
