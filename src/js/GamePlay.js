@@ -53,7 +53,11 @@ export default class GamePlay {
     this.boardEl.classList.add(theme);
     for (let i = 0; i < this.boardSize ** 2; i += 1) {
       const cellEl = document.createElement('div');
-      cellEl.classList.add('cell', 'map-tile', `map-tile-${calcTileType(i, this.boardSize)}`);
+      cellEl.classList.add(
+        'cell',
+        'map-tile',
+        `map-tile-${calcTileType(i, this.boardSize)}`,
+      );
       cellEl.addEventListener('mouseenter', event => this.onCellEnter(event));
       cellEl.addEventListener('mouseleave', event => this.onCellLeave(event));
       cellEl.addEventListener('click', event => this.onCellClick(event));
@@ -82,7 +86,10 @@ export default class GamePlay {
       healthEl.classList.add('health-level');
 
       const healthIndicatorEl = document.createElement('div');
-      healthIndicatorEl.classList.add('health-level-indicator', `health-level-indicator-${calcHealthLevel(position.character.health)}`);
+      healthIndicatorEl.classList.add(
+        'health-level-indicator',
+        `health-level-indicator-${calcHealthLevel(position.character.health)}`,
+      );
       healthIndicatorEl.style.width = `${position.character.health}%`;
       healthEl.appendChild(healthIndicatorEl);
 
@@ -192,8 +199,9 @@ export default class GamePlay {
 
   deselectCell(index) {
     const cell = this.cells[index];
-    cell.classList.remove(...Array.from(cell.classList)
-      .filter(o => o.startsWith('selected')));
+    cell.classList.remove(
+      ...Array.from(cell.classList).filter(o => o.startsWith('selected')),
+    );
   }
 
   showCellTooltip(message, index) {
@@ -203,9 +211,9 @@ export default class GamePlay {
   hideCellTooltip(index) {
     this.cells[index].title = '';
   }
-  
+
   showDamage(index, damage) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const cell = this.cells[index];
       const damageEl = document.createElement('span');
       damageEl.textContent = damage;
