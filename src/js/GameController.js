@@ -50,16 +50,16 @@ export default class GameController {
     this.gamePlay.drawUi(themes.desert);
     this.gamePlay.redrawPositions(positions);
   }
-
-  onCellClick(index) {
-    // TODO: react to click
-  }
-
-  onCellEnter(index) {
-    // TODO: react to mouse enter
-  }
-
-  onCellLeave(index) {
-    // TODO: react to mouse leave
-  }
+  //
+  // onCellClick(index) {
+  //   // TODO: react to click
+  // }
+  //
+  // onCellEnter(index) {
+  //   // TODO: react to mouse enter
+  // }
+  //
+  // onCellLeave(index) {
+  //   // TODO: react to mouse leave
+  // }
 }
