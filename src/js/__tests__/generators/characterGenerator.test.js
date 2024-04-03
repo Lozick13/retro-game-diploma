@@ -1,7 +1,7 @@
 import { characterGenerator } from '../../generators';
 
 test('characterGenerator check type', () => {
-  const allowedTypes = ['Swordsman', 'Bowman', 'Magician', 'Daemon', 'Undead', 'Vampire'];
+  const allowedTypes = ['swordsman', 'bowman', 'magician', 'daemon', 'undead', 'vampire'];
   const maxLevel = 4;
 
   const generator = characterGenerator(allowedTypes, maxLevel);
@@ -11,19 +11,19 @@ test('characterGenerator check type', () => {
 });
 
 test('characterGenerator many Character', () => {
-  const allowedTypes = ['Swordsman', 'Bowman', 'Magician', 'Daemon', 'Undead', 'Vampire'];
+  const allowedTypes = ['swordsman', 'bowman', 'magician', 'daemon', 'undead', 'vampire'];
   const maxLevel = 4;
 
   const generator = characterGenerator(allowedTypes, maxLevel);
   const characters = [];
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 30; i++) {
     characters.push(generator.next().value);
     if (characters[i] === undefined) {
       characters.length = 0;
     }
   }
 
-  expect(characters.length).toBe(10);
+  expect(characters.length).toBe(30);
 });
 
 test('characterGenerator Error', () => {

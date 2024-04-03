@@ -38,8 +38,8 @@ test('Team, Get character', () => {
 
   expect(team.characters.toString()).toBe(
     [
-      { attack: 40, defence: 10, health: 50, level: 2, type: 'Swordsman' },
-      { attack: 25, defence: 25, health: 50, level: 1, type: 'Bowman' },
+      { attack: 40, defence: 10, health: 50, level: 2, type: 'swordsman' },
+      { attack: 25, defence: 25, health: 50, level: 1, type: 'bowman' },
     ].toString(),
   );
 });

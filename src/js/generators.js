@@ -19,12 +19,12 @@ import Team from './Team';
 export function* characterGenerator(allowedTypes, maxLevel) {
   while (true) {
     const characterType = {
-      Swordsman: Swordsman,
-      Bowman: Bowman,
-      Magician: Magician,
-      Daemon: Daemon,
-      Undead: Undead,
-      Vampire: Vampire,
+      swordsman: Swordsman,
+      bowman: Bowman,
+      magician: Magician,
+      daemon: Daemon,
+      undead: Undead,
+      vampire: Vampire,
     };
     const selectedType = allowedTypes[Math.floor(Math.random() * allowedTypes.length)];
     const level = Math.floor(Math.random() * maxLevel) + 1;
