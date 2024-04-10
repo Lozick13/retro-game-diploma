@@ -1,42 +1,59 @@
 import { characterGenerator } from '../../generators';
 
-test('characterGenerator check type', () => {
-  const allowedTypes = ['swordsman', 'bowman', 'magician', 'daemon', 'undead', 'vampire'];
-  const maxLevel = 4;
+describe('characterGenerator', () => {
+  test('check type', () => {
+    const allowedTypes = [
+      'swordsman',
+      'bowman',
+      'magician',
+      'daemon',
+      'undead',
+      'vampire',
+    ];
+    const maxLevel = 4;
 
-  const generator = characterGenerator(allowedTypes, maxLevel);
-  const character = generator.next().value;
-
-  expect(allowedTypes.includes(character.type)).toBe(true);
-});
-
-test('characterGenerator many Character', () => {
-  const allowedTypes = ['swordsman', 'bowman', 'magician', 'daemon', 'undead', 'vampire'];
-  const maxLevel = 4;
-
-  const generator = characterGenerator(allowedTypes, maxLevel);
-  const characters = [];
-  for (let i = 0; i < 30; i++) {
-    characters.push(generator.next().value);
-    if (characters[i] === undefined) {
-      characters.length = 0;
-    }
-  }
-
-  expect(characters.length).toBe(30);
-});
-
-test('characterGenerator Error', () => {
-  const allowedTypes = ['fakeSwordsman', 'fakeBowman'];
-  const maxLevel = 4;
-  let errorMessage;
-
-  try {
     const generator = characterGenerator(allowedTypes, maxLevel);
-    generator.next().value;
-  } catch (e) {
-    errorMessage = e.message;
-  }
+    const character = generator.next().value;
 
-  expect(errorMessage).toBe('Invalid type');
+    expect(allowedTypes.includes(character.type)).toBe(true);
+  });
+
+  test('Many Character', () => {
+    const allowedTypes = [
+      'swordsman',
+      'bowman',
+      'magician',
+      'daemon',
+      'undead',
+      'vampire',
+    ];
+    const maxLevel = 4;
+
+    const generator = characterGenerator(allowedTypes, maxLevel);
+    const characters = [];
+    for (let i = 0; i < 30; i++) {
+      const character = generator.next().value;
+
+      if (character) {
+        characters.push(character);
+      }
+    }
+
+    expect(characters.length).toBe(30);
+  });
+
+  test('Invalid type', () => {
+    const allowedTypes = ['fakeSwordsman', 'fakeBowman'];
+    const maxLevel = 4;
+    let errorMessage;
+
+    try {
+      const generator = characterGenerator(allowedTypes, maxLevel);
+      generator.next().value;
+    } catch (e) {
+      errorMessage = e.message;
+    }
+
+    expect(errorMessage).toBe('Invalid type');
+  });
 });

@@ -28,7 +28,7 @@ export default class GameController {
       const positionPlayer =
         Math.floor(Math.random() * 8) * 8 + Math.floor(Math.random() * 2);
       const positionComputer =
-        Math.floor(Math.random() * 8) * 8 + Math.floor(Math.random() * 2) + 5;
+        Math.floor(Math.random() * 8) * 8 + Math.floor(Math.random() * 2) + 6;
 
       this.positions.forEach(({ position }) => {
         if (position === positionComputer || position === positionPlayer) {
@@ -59,33 +59,6 @@ export default class GameController {
     this.gamePlay.addCellClickListener(this.onCellClick.bind(this));
   }
 
-  onCellClick(index) {
-    if (this.indexSelectedCharacter) {
-      this.gamePlay.deselectCell(this.indexSelectedCharacter);
-    }
-
-    if (this.indexSelectedCharacter !== index) {
-      const playerTypes = ['swordsman', 'bowman', 'magician'];
-      const playerCell = this.positions.some(({ position, character }) => {
-        if (position === index && playerTypes.includes(character.type)) {
-          this.gamePlay.selectCell(index);
-          this.indexSelectedCharacter = index;
-          this.selectedCharacter = character;
-
-          return true;
-        }
-        return false;
-      });
-
-      if (!playerCell) {
-        GamePlay.showError('Your character is not on this square');
-      }
-    } else {
-      this.indexSelectedCharacter = null;
-      this.selectedCharacter = null;
-    }
-  }
-
   onCellEnter(index) {
     const foundCharacter = this.positions.find(({ position }) => position === index);
     if (foundCharacter) {
@@ -98,7 +71,37 @@ export default class GameController {
     }
 
     if (this.indexSelectedCharacter !== null) {
-      this.showActions(index);
+      this.showActions(foundCharacter, index);
+    }
+  }
+
+  onCellClick(index) {
+    if (this.indexSelectedCharacter) {
+      this.gamePlay.deselectCell(this.indexSelectedCharacter);
+    }
+
+    if (!this.indexSelectedCharacter && !this.checkPlayerCharacterCell(index)) {
+      GamePlay.showError('Your character is not on this square');
+    }
+
+    if (
+      this.indexSelectedCharacter &&
+      this.indexSelectedCharacter !== index &&
+      !this.checkPlayerCharacterCell(index)
+    ) {
+      const playerTypes = ['swordsman', 'bowman', 'magician'];
+      const movementZone = this.getMovementZone(playerTypes, index);
+      const voidCell = !this.positions.some(({ position }) => position === index);
+
+      if (movementZone && voidCell) {
+        this.moveCharacter(index);
+      }
+
+      this.indexSelectedCharacter = null;
+      this.selectedCharacter = null;
+
+      this.deselectCells();
+      this.gamePlay.setCursor(cursors.auto);
     }
   }
 
@@ -106,43 +109,78 @@ export default class GameController {
     this.gamePlay.hideCellTooltip(index);
   }
 
-  formatCharacterInfo(level, attack, defence, health) {
-    return `\u{1F396}${level} \u{2694}${attack} \u{1F6E1}${defence} \u{2764}${health}`;
-  }
-
-  showActions(index) {
-    const foundCharacter = this.positions.find(({ position }) => position === index);
+  checkPlayerCharacterCell(index) {
     const playerTypes = ['swordsman', 'bowman', 'magician'];
 
+    return this.positions.some(({ position, character }) => {
+      if (position === index && playerTypes.includes(character.type)) {
+        this.gamePlay.selectCell(index);
+        this.indexSelectedCharacter = index;
+        this.selectedCharacter = character;
+
+        return true;
+      }
+      return false;
+    });
+  }
+
+  getMovementZone(types, index) {
     const movementRadius =
-      this.selectedCharacter.type === playerTypes[0]
+      this.selectedCharacter.type === types[0]
         ? 4
-        : this.selectedCharacter.type === playerTypes[1]
+        : this.selectedCharacter.type === types[1]
           ? 2
-          : 1;
+          : this.selectedCharacter.type === types[2]
+            ? 1
+            : (() => {
+                throw new Error('Invalid types');
+              })();
+
+    return this.calculatedRadius(this.indexSelectedCharacter, index, movementRadius);
+  }
+
+  getAttackZone(types, index) {
     const attackRadius =
-      this.selectedCharacter.type === playerTypes[0]
+      this.selectedCharacter.type === types[0]
         ? 1
-        : this.selectedCharacter.type === playerTypes[1]
+        : this.selectedCharacter.type === types[1]
           ? 2
-          : 4;
+          : this.selectedCharacter.type === types[2]
+            ? 4
+            : (() => {
+                throw new Error('Invalid types');
+              })();
 
-    const movementZone = this.calculatedRadius(
-      this.indexSelectedCharacter,
-      index,
-      movementRadius,
-    );
-    const attackZone = this.calculatedRadius(
-      this.indexSelectedCharacter,
-      index,
-      attackRadius,
+    return this.calculatedRadius(this.indexSelectedCharacter, index, attackRadius);
+  }
+
+  moveCharacter(index) {
+    const characterIndex = this.positions.findIndex(
+      ({ position }) => position === this.indexSelectedCharacter,
     );
 
+    this.positions[characterIndex].position = index;
+    this.gamePlay.redrawPositions(this.positions);
+  }
+
+  deselectCells() {
     for (let i = 0; i < 64; i++) {
       if (i !== this.indexSelectedCharacter) {
         this.gamePlay.deselectCell(i);
       }
     }
+  }
+
+  formatCharacterInfo(level, attack, defence, health) {
+    return `\u{1F396}${level} \u{2694}${attack} \u{1F6E1}${defence} \u{2764}${health}`;
+  }
+
+  showActions(foundCharacter, index) {
+    const playerTypes = ['swordsman', 'bowman', 'magician'];
+    const movementZone = this.getMovementZone(playerTypes, index);
+    const attackZone = this.getAttackZone(playerTypes, index);
+
+    this.deselectCells();
 
     if (index !== this.indexSelectedCharacter && movementZone) {
       this.gamePlay.selectCell(index, 'green');
@@ -157,9 +195,11 @@ export default class GameController {
       if (!playerTypes.includes(character.type) && attackZone) {
         this.gamePlay.setCursor(cursors.crosshair);
         this.gamePlay.selectCell(index, 'red');
-      } else if (!playerTypes.includes(character.type) && !attackZone) {
-        this.gamePlay.setCursor(cursors.notallowed);
-      } else {
+      } else if (
+        playerTypes.includes(character.type) &&
+        this.indexSelectedCharacter !== index
+      ) {
+        this.gamePlay.deselectCell(index);
         this.gamePlay.setCursor(cursors.pointer);
       }
     }
